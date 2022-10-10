@@ -2,8 +2,8 @@ package model.entidades;
 
 import java.util.Date;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+import model.execptions.FullException;
 
 public class Reserva {
 	private Integer numeroQuarto;
@@ -12,7 +12,10 @@ public class Reserva {
 
 	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-	public Reserva(Integer numeroQuarto, Date checkin, Date checkout) {
+	public Reserva(Integer numeroQuarto, Date checkin, Date checkout) throws FullException{
+		if (checkin.after(checkout)) {
+			throw new FullException( "Check-out date must be after check-in date!");
+		}
 		this.numeroQuarto = numeroQuarto;
 		this.checkin = checkin;
 		this.checkout = checkout;
@@ -40,15 +43,16 @@ public class Reserva {
 
 	}
 
-	public String atualizardate(Date teste1,Date teste2, Date checkin, Date checkout) {
+	public void atualizardate(Date teste1,Date teste2, Date checkin, Date checkout) throws FullException{
 		if (checkin.before(teste1) || checkout.before(teste2)) {
-			return "Reservation dates for update must be furute dates!";
-		} else if (!checkout.after(checkin)) {
-			return "Check-out date must be after check-in date";
+			throw new FullException( "Reservation dates for update must be furute dates!");
+		}
+		if (!checkout.after(checkin)) {
+			throw new FullException( "Check-out date must be after check-in date");
 		}
 		this.checkin = checkin;
 		this.checkout = checkout;
-		return null;
+		
 	}
 
 	@Override
